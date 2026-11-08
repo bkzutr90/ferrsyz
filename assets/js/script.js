@@ -1,167 +1,70 @@
 (() => {
   'use strict';
-
+  document.documentElement.classList.add('js');
   const $ = (s, c = document) => c.querySelector(s);
   const $$ = (s, c = document) => [...c.querySelectorAll(s)];
-  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const finePointer = matchMedia('(hover: hover) and (pointer: fine)').matches;
+  const WA = 'https://wa.me/6285773305337?text=';
+  const INV = 'https://discord.com/users/473850235727249439';
 
-  /* Tahun di footer */
-  const year = $('#year');
-  if (year) year.textContent = new Date().getFullYear();
+  /* [nama, ringkasan, deskripsi, fitur, tag, client id (kosong = belum aktif), warna] */
+  const bots = [
+    ['Music Bot', 'Musik dari YouTube, link, dan playlist', 'Putar lagu dari YouTube, tautan langsung, dan playlist. Cocok untuk server yang ingin ada musik kapan saja.', ['Mode 24/7', 'Autoplay', 'Loop', 'Shuffle', 'Playlist'], 'aktif komunitas', '1561467218208759808', '#B9B9FF'],
+    ['Ticket Bot', 'Sistem tiket bantuan untuk server', 'Member membuka tiket dari sebuah panel, memilih kategori, lalu mengisi form. Staf bisa mengambil (claim) tiket dan menentukan prioritasnya.', ['Panel tiket', 'Kategori kustom', 'Form kustom', 'Claim', 'Prioritas'], 'aktif komunitas', '1566112578814611467', '#FFD23F'],
+    ['Community Bot', 'Semua kebutuhan dasar server komunitas', 'Satu bot untuk mengurus sambutan member baru, role mandiri, voice sementara, level, statistik server, sampai pelacakan undangan.', ['Welcome', 'Selfrole panel', 'Temp voice', 'Leveling', 'Server stats', 'Rank', 'Leaderboard', 'Invite tracker'], 'aktif komunitas', '1561446462657798285', '#79E0B3'],
+    ['Game Kata', 'Lima permainan kata dan tebakan', 'Kumpulan game untuk menghidupkan obrolan server: sambung kata, tebak kata, tebak gambar, susun kata, dan tebak lagu.', ['Sambung kata', 'Tebak kata', 'Tebak gambar', 'Susun kata', 'Tebak lagu'], 'aktif game', '1565753628487188500', '#FF5C8A'],
+    ['Game Werewolf', 'Main Werewolf bareng teman di Discord', 'Mainkan Werewolf langsung di dalam Discord, lengkap dengan banyak peran yang membuat tiap ronde berbeda.', ['Werewolf', 'Seer', 'Guardian', 'Witch', 'Hunter', 'Mayor', 'Lycan', 'Villager'], 'aktif game', '1561194019042631770', '#FF5C8A'],
+    ['Security Bot', 'Perlindungan server dari raid dan scam', 'Menjaga server dari serangan massal dan tautan berbahaya, ditambah moderasi otomatis agar staf tidak kewalahan.', ['Anti-raid', 'Anti-nuke', 'Anti-scam link', 'Auto moderation'], 'komunitas', '', '#B9B9FF'],
+    ['Bot AFK Voice', 'Menjaga durasi voice tetap berjalan', 'Menjaga durasi voice agar tidak tereset saat kamu keluar dari voice channel. Berguna untuk server dengan sistem level berbasis waktu voice.', ['Durasi voice terjaga', 'Tidak reset saat keluar'], 'utilitas', '', '#79E0B3'],
+    ['Bot Ngobrol', 'Ngobrol anonim dengan orang baru', 'Bertemu dan ngobrol anonim dengan orang baru, langsung lewat pesan pribadi (DM) tanpa perlu membuka identitas.', ['Anonim', 'Lewat DM', 'Teman baru'], 'aktif komunitas', '1563696807043797014', '#FFD23F'],
+    ['AI Community Assistant', 'Asisten AI untuk member dan moderator', 'Asisten AI yang membantu anggota menjawab pertanyaan dan membantu moderator menangani pekerjaan harian di server.', ['Bantu member', 'Bantu moderator'], 'utilitas komunitas', '', '#79E0B3'],
+    ['Game Pet Virtual', 'Adopsi dan rawat hewan peliharaan virtual', 'Pendamping virtual untuk member: adopsi pet, beri makan, latih, dan rawat sampai tumbuh bersama.', ['Adopsi', 'Beri makan', 'Latih', 'Rawat'], 'aktif game', '1565820958927880354', '#FF5C8A']
+  ];
 
-  /* Bintang latar, jumlahnya menyesuaikan lebar layar */
-  const stars = $('.bg .stars');
-  if (stars) {
-    const total = innerWidth < 700 ? 34 : 72;
-    const frag = document.createDocumentFragment();
-    for (let i = 0; i < total; i++) {
-      const s = document.createElement('i');
-      const big = Math.random() > 0.9;
-      s.style.left = Math.random() * 100 + '%';
-      s.style.top = Math.random() * 100 + '%';
-      s.style.setProperty('--o', (0.25 + Math.random() * 0.6).toFixed(2));
-      s.style.setProperty('--d', (2.5 + Math.random() * 5).toFixed(1) + 's');
-      s.style.animationDelay = (-Math.random() * 6).toFixed(1) + 's';
-      if (big) { s.style.width = s.style.height = '3px'; }
-      frag.appendChild(s);
-    }
-    stars.appendChild(frag);
-  }
+  const grid = $('#grid');
+  grid.innerHTML = bots.map(([name, sum, desc, chips, tags, id, color]) => {
+    const wa = WA + encodeURIComponent('Halo Ferrsyz, saya tertarik dengan ' + name + '.');
+    return `<li data-tags="${tags}"><article class="card" style="--c:${color}">
+      <header><h3>${name}</h3><span class="badge${id ? ' on' : ''}">${id ? 'Aktif' : 'Siap dipesan'}</span></header>
+      <p class="sum">${sum}</p><p>${desc}</p>
+      <ul class="chips">${chips.map((c) => `<li>${c}</li>`).join('')}</ul>
+      <div class="acts">${id
+        ? `<a class="btn sm" href="${INV + id}" target="_blank" rel="noopener">Undang ke server</a><a class="link" href="${wa}" target="_blank" rel="noopener">Pesan versi custom</a>`
+        : `<a class="btn sm" href="${wa}" target="_blank" rel="noopener">Pesan bot ini</a>`}</div>
+    </article></li>`;
+  }).join('');
 
-  /* Cahaya biru halus yang mengikuti kursor */
-  const root = document.documentElement;
-  if (finePointer && !reduceMotion) {
-    let tx = innerWidth * 0.7, ty = innerHeight * 0.2, x = tx, y = ty, raf = 0;
-    const loop = () => {
-      x += (tx - x) * 0.08;
-      y += (ty - y) * 0.08;
-      root.style.setProperty('--gx', x.toFixed(1) + 'px');
-      root.style.setProperty('--gy', y.toFixed(1) + 'px');
-      raf = (Math.abs(tx - x) > 0.5 || Math.abs(ty - y) > 0.5) ? requestAnimationFrame(loop) : 0;
-    };
-    addEventListener('pointermove', (e) => {
-      tx = e.clientX; ty = e.clientY;
-      if (!raf) raf = requestAnimationFrame(loop);
-    }, { passive: true });
-  }
-
-  /* Header berubah saat halaman di-scroll */
-  const bar = $('#top-bar');
-  const onScroll = () => bar && bar.classList.toggle('scrolled', scrollY > 24);
-  addEventListener('scroll', onScroll, { passive: true });
-  onScroll();
-
-  /* Orbit: hentikan animasi SVG kalau pengguna meminta gerak dikurangi */
-  const orbit = $('.orbit');
-  if (orbit && reduceMotion && typeof orbit.pauseAnimations === 'function') {
-    orbit.pauseAnimations();
-  }
-
-  /* Katalog: buka satu bot sekali waktu */
-  const items = $$('.item');
-  items.forEach((item) => {
-    const head = $('.item-head', item);
-    head.addEventListener('click', () => {
-      const willOpen = !item.classList.contains('open');
-      items.forEach((other) => {
-        other.classList.remove('open');
-        $('.item-head', other).setAttribute('aria-expanded', 'false');
-      });
-      if (willOpen) {
-        item.classList.add('open');
-        head.setAttribute('aria-expanded', 'true');
-      }
+  /* Saring katalog */
+  const items = $$('li', grid), filters = $$('.filter'), count = $('#count');
+  filters.forEach((btn) => btn.addEventListener('click', () => {
+    const f = btn.dataset.f;
+    filters.forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
+    let shown = 0;
+    items.forEach((li) => {
+      const ok = f === 'semua' || li.dataset.tags.split(' ').includes(f);
+      li.hidden = !ok;
+      if (ok) shown++;
     });
-  });
+    count.textContent = shown + ' bot';
+  }));
 
-  /* Katalog: saring berdasarkan kategori */
-  const filters = $$('.filter');
-  const count = $('#count');
-  filters.forEach((btn) => {
-    btn.addEventListener('click', () => {
-      const f = btn.dataset.f;
-      filters.forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
+  /* Percakapan hero: pesan muncul satu per satu, sekali saat halaman dibuka */
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  $$('#chat .msg').forEach((m, i) => reduce ? m.classList.add('in') : setTimeout(() => m.classList.add('in'), 500 + i * 900));
 
-      let shown = 0;
-      items.forEach((item) => {
-        const match = f === 'semua' || item.dataset.tags.split(' ').includes(f);
-        item.hidden = !match;
-        if (match) shown++;
-        if (!match && item.classList.contains('open')) {
-          item.classList.remove('open');
-          $('.item-head', item).setAttribute('aria-expanded', 'false');
-        }
-      });
-      if (count) count.textContent = shown + ' bot';
-    });
-  });
-
-  /* Proses: garis biru terisi mengikuti scroll */
-  const steps = $('#steps');
-  if (steps) {
-    const stepEls = $$('.step', steps);
-    const update = () => {
-      const rect = steps.getBoundingClientRect();
-      const focus = innerHeight * 0.55;
-      const p = Math.min(1, Math.max(0, (focus - rect.top) / rect.height));
-      steps.style.setProperty('--p', p.toFixed(3));
-      stepEls.forEach((el) => {
-        el.classList.toggle('on', el.getBoundingClientRect().top < focus);
-      });
-    };
-    addEventListener('scroll', update, { passive: true });
-    addEventListener('resize', update);
-    update();
-  }
-
-  /* Emblem logo: miring mengikuti kursor */
-  const emblem = $('#emblem');
-  if (emblem && finePointer && !reduceMotion) {
-    emblem.addEventListener('pointermove', (e) => {
-      const r = emblem.getBoundingClientRect();
-      const px = (e.clientX - r.left) / r.width;
-      const py = (e.clientY - r.top) / r.height;
-      emblem.style.transform = `rotateY(${((px - 0.5) * 12).toFixed(2)}deg) rotateX(${((0.5 - py) * 12).toFixed(2)}deg)`;
-      emblem.style.setProperty('--rx', (px * 100).toFixed(1) + '%');
-      emblem.style.setProperty('--ry', (py * 100).toFixed(1) + '%');
-    });
-    emblem.addEventListener('pointerleave', () => { emblem.style.transform = ''; });
-  }
+  $('#year').textContent = new Date().getFullYear();
 
   /* Salin nomor WhatsApp */
   const toast = $('#toast');
-  let toastTimer;
-  const showToast = (msg) => {
-    if (!toast) return;
-    toast.textContent = msg;
+  let timer;
+  const show = (t) => {
+    toast.textContent = t;
     toast.classList.add('show');
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
+    clearTimeout(timer);
+    timer = setTimeout(() => toast.classList.remove('show'), 2200);
   };
-
-  const copyBtn = $('#copy-wa');
-  if (copyBtn) {
-    copyBtn.addEventListener('click', async () => {
-      const number = '085773305337';
-      try {
-        await navigator.clipboard.writeText(number);
-        showToast('Nomor WhatsApp tersalin');
-      } catch (err) {
-        const ta = document.createElement('textarea');
-        ta.value = number;
-        ta.style.position = 'fixed';
-        ta.style.opacity = '0';
-        document.body.appendChild(ta);
-        ta.select();
-        try {
-          document.execCommand('copy');
-          showToast('Nomor WhatsApp tersalin');
-        } catch (e) {
-          showToast('Gagal menyalin. Nomornya: ' + number);
-        }
-        ta.remove();
-      }
-    });
-  }
+  $('#copy-wa').addEventListener('click', async () => {
+    const n = '085773305337';
+    try { await navigator.clipboard.writeText(n); show('Nomor WhatsApp tersalin'); }
+    catch (e) { show('Gagal menyalin. Nomornya: ' + n); }
+  });
 })();
