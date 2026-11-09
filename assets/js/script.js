@@ -77,40 +77,4 @@
       if (count) count.textContent = shown + ' bot';
     });
   });
-
-  /* Salin nomor WhatsApp */
-  const toast = $('#toast');
-  let toastTimer;
-  const showToast = (msg) => {
-    if (!toast) return;
-    toast.textContent = msg;
-    toast.classList.add('show');
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
-  };
-
-  const copyBtn = $('#copy-wa');
-  if (copyBtn) {
-    copyBtn.addEventListener('click', async () => {
-      const number = '085773305337';
-      try {
-        await navigator.clipboard.writeText(number);
-        showToast('Nomor WhatsApp tersalin');
-      } catch (err) {
-        const ta = document.createElement('textarea');
-        ta.value = number;
-        ta.style.position = 'fixed';
-        ta.style.opacity = '0';
-        document.body.appendChild(ta);
-        ta.select();
-        try {
-          document.execCommand('copy');
-          showToast('Nomor WhatsApp tersalin');
-        } catch (e) {
-          showToast('Gagal menyalin. Nomornya: ' + number);
-        }
-        ta.remove();
-      }
-    });
-  }
 })();
